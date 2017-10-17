@@ -1,0 +1,25 @@
+import pandas as pd
+import Patient
+import Calculator
+
+diets = ['CFL', 'CFH', 'HP', 'LC', 'PA']
+macros = []
+
+
+def load_macros(schema):
+    macra = []
+    path = 'C:\Users\PC\Desktop\DIETY\ '.replace(' ', '') + schema + '.txt'
+    print path
+    with open(path, 'r') as f:
+        for line in f:
+            macros.append(float(line[0:2]))
+            macros.append(float(line[3:5]))
+            macros.append(float(line[6:8]))
+            break
+    return macra
+
+
+calc = Calculator.Calculator()
+print calc.calc_meal(1)
+
+result = Patient.Patient()
