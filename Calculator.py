@@ -1,8 +1,8 @@
 import psycopg2
 import psycopg2.extras
 import numpy as np
-import math as mt
 import pandas.io.sql as pdsql
+import Meal
 class Calculator:
     conn = 0
 
@@ -41,20 +41,15 @@ class Calculator:
         curs.close()
         return x
 
-
-    def present_meal (self ,mealid):
-        return
-
-
     def select_meal(self,list,targetMacros):                           ## trzeba to jakos poprawic
         bestMeal = 0
         bestScore =100000
         for meal in list:
             mealMacros =Calculator.calc_meal(meal)
-            score = mt.fabs( mealMacros['Kcal']-targetMacros['Kcal'])/100
-            score =+ mt.fabs(mealMacros['Proteins'] - targetMacros['Proteins'])
-            score =+ mt.fabs(mealMacros['Lipids'] - targetMacros['Lipids'])
-            score =+ mt.fabs(mealMacros['Carbs'] - targetMacros['Carbs'])/2
+            score = ((mealMacros['Kcal']-targetMacros['Kcal'])/100)**2
+            score =+ (mealMacros['Proteins'] - targetMacros['Proteins'])**2
+            score =+ (mealMacros['Lipids'] - targetMacros['Lipids'])**2
+            score =+ ((mealMacros['Carbs'] - targetMacros['Carbs'])/2)**2
             if score < bestScore:
                 bestMeal = meal
                 bestScore =score
@@ -71,7 +66,9 @@ class Calculator:
             result['Proteins'] = macro[1]
             result['Lipids'] = macro[2]
             result['Carbs'] = macro[3]
+            curs.close ()
             return result
+
 
     def get_meal_ingredients (self,mealid):
         df=0
@@ -84,6 +81,29 @@ class Calculator:
         df['Proteins'] = df['Proteins'] * df['Amount']
         df['Lipids'] = df['Lipids'] * df['Amount']
         return df
+
+    def get_name (self , mealid):
+        query = 'Select  name  from meal where id =' + str(id)
+        curs= Calculator.conn.cursor()
+        curs.execute(query)
+        row = curs.fetchall()
+        for i in row:
+            name = i[0]
+            curs.close()
+            return name
+
+
+
+
+
+    def create_meal (self , mealid):
+        mealigredients =  Calculator.get_meal_ingredients(mealid)
+        macros = Calculator.calc_meal(mealid)
+        name = Calculator.get_name(mealid)
+        meal = Meal.Meal(name,mealigredients,macros )
+        return meal
+
+
 
 
 

@@ -1,93 +1,58 @@
-import Calculator
+import math as mt
+
+
 class Meal:
     macros = 0
     ingredients=[]
     name =0
-    def adjust(self,targets):
-        calc= Calculator.Calculator()
-        if Meal.Kcal < targets['Proteins'] * 0.85 or Meal.Kcal > targets['Protiens'] * 1.1:
-            prot=Meal.find_protein()
-            Meal.modify_ingredient(prot,(targets['Protiens']/calc.get_ingredient(Meal.ingredients[prot])['Proteins'])-1)
-        if Meal.Kcal < targets['Lipids'] * 0.85 or Meal.Kcal > targets['Lipids'] * 1.1:
-            prot=Meal.find_protein()
-            Meal.modify_ingredient(prot,(targets['Lipids']/calc.get_ingredient(Meal.ingredients[prot])['Lipids'])-1)
-        if Meal.Kcal < targets['Carbs'] * 0.85 or Meal.Kcal > targets['Carbs'] * 1.1:
-            prot=Meal.find_protein()
-            Meal.modify_ingredient(prot,(targets['Carbs']/calc.get_ingredient(Meal.ingredients[prot])['Carbs'])-1)
-
 
     def __init__ (self,name,ingredients,macros):
         Meal.ingredients=ingredients
         Meal.macros=macros
-        Meal.name = name 
+        Meal.name = name
 
-
-
-
-
-
-
-
-
-
-
-
-    def multiply (self , number):
-        Meal.kcal *= number
-        Meal.proteins *= number
-        Meal.lipids *= number
-        Meal.carbs *= number
-        Meal.amounts *= number
+    def adjust (self,targets):
+        if Meal.macros['Proteins'] > 1.3 * targets['Proteins'] or Meal.macros['Proteins'] < 0.75 * targets['Proteins']:
+            multi =  mt.sqrt(targets['Proteins'] /  Meal.macros['Proteins'])
+            Meal.modify_ingredient(Meal.find_param('Proteins'),multi)
+        if Meal.macros['Lipids'] > 1.3 * targets['Lipids'] or Meal.macros['Lipids'] < 0.75 * targets['Lipids']:
+            multi =  mt.sqrt(targets['Lipids'] /  Meal.macros['Lipids'])
+            Meal.modify_ingredient(Meal.find_param('Lipids'),multi)
+        if Meal.macros['Carbs'] > 1.3 * targets['Carbs'] or Meal.macros['Carbs'] < 0.75 * targets['Carbs']:
+            multi =  mt.sqrt(targets['Carbs'] /  Meal.macros['Carbs'])
+            Meal.modify_ingredient(Meal.find_param('Carbs'),multi)
         return
 
-
+    def resize (self , number):
+        Meal.macros['Kcal'] *= number
+        Meal.macros['Proteins'] *= number
+        Meal.macros['Lipids'] *= number
+        Meal.macros['Carbs'] *= number
+        Meal.ingredients['Kcal'] *= number
+        Meal.ingredients['Lipids'] *= number
+        Meal.ingredients['Proteins'] *= number
+        Meal.ingredients['Carbs'] *= number
         return
 
-    def find_protein (self):
+    def find_param (self,param):
         bestScore = 0
         i=0
         f=-1
-        calc = Calculator.Calculator()
+
         for ingredient in  Meal.ingredients:
-            score = calc.get_ingredient(ingredient)['Proteins'] * Meal.amounts[i]
+            score = ingredient[param]
             if score > bestScore:
                 bestScore = score
                 f=i
             i=i+1
         return f
 
-
-    def find_lipid (self):
-        bestScore = 0
-        i=0
-        f=-1
-        calc = Calculator.Calculator()
-        for ingredient in  Meal.ingredients:
-            score = calc.get_ingredient(ingredient)['Lipids'] * Meal.amounts[i]
-            if score > bestScore:
-                bestScore = score
-                f=i
-            i = i + 1
-        return f
-
-    def find_carb (self):
-        bestScore = 0
-        i=0
-        f=-1
-        calc = Calculator.Calculator()
-        for ingredient in  Meal.ingredients:
-            score = calc.get_ingredient(ingredient)['Carbs'] * Meal.amounts[i]
-            if score > bestScore:
-                bestScore = score
-                f=i
-            i = i + 1
-        return f
-
     def modify_ingredient (self ,inList, multiplier):
-        calc= Calculator.Calculator()
 
-        Meal.kcal += calc.get_ingredient(Meal.ingredients[inList])['Kcal']*multiplier
-        Meal.proteins += calc.get_ingredient(Meal.ingredients[inList])['Proteins']*multiplier
-        Meal.lipids +=calc.get_ingredient(Meal.ingredients[inList])['Lipds']*multiplier
-        Meal.carbs += calc.get_ingredient(Meal.ingredients[inList])['Proteins']*multiplier
-        Meal.amounts[inList] *= (multiplier+1)
+
+        Meal.macros['Kcal'] += Meal.ingredients['Kcal'].iloc[inList]*multiplier
+        Meal.macros['Proteins'] += Meal.ingredients['Proteins'].iloc[inList] * multiplier
+        Meal.macros['Carbs'] += Meal.ingredients['Carbs'].iloc[inList] * multiplier
+        Meal.macros['Lipids'] += Meal.ingredients['Lipids'].iloc[inList] * multiplier
+        return
+
