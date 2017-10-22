@@ -20,8 +20,7 @@ class Patient:
         elif Patient.df['Goal'].iloc[0] == 'gain':
             goalRatio = 1.12
         result['Kcal'] = goalRatio * 25 * Patient.df['Weight'].iloc[0] * Patient.df['Activity'].iloc[0]
-        if Patient.df['Plan'].iloc[0] is None or Patient.df['Plan'].iloc[
-            0] == 'IfItFit':  ## tutaj powinno byc wczytywanie pliku dietainfo
+        if Patient.df['Plan'].iloc[0] is None or Patient.df['Plan'].iloc[0] == 'IfItFit':  ## tutaj powinno byc wczytywanie pliku dietainfo
             result['Proteins'] = (result['Kcal'] * 0.14) / 4
             result['Lipids'] = (result['Kcal'] * 0.3) / 9
             result['Carbs'] = (result['Kcal'] * 0.56) / 4

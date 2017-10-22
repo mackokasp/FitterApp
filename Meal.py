@@ -7,20 +7,20 @@ class Meal:
     name =0
 
     def __init__ (self,name,ingredients,macros):
-        Meal.ingredients=ingredients
-        Meal.macros=macros
-        Meal.name = name
+        self.ingredients=ingredients
+        self.macros=macros
+        self.name = name
 
     def adjust (self,targets):
-        if Meal.macros['Proteins'] > 1.3 * targets['Proteins'] or Meal.macros['Proteins'] < 0.75 * targets['Proteins']:
-            multi =  mt.sqrt(targets['Proteins'] /  Meal.macros['Proteins'])
-            Meal.modify_ingredient(Meal.find_param('Proteins'),multi)
-        if Meal.macros['Lipids'] > 1.3 * targets['Lipids'] or Meal.macros['Lipids'] < 0.75 * targets['Lipids']:
-            multi =  mt.sqrt(targets['Lipids'] /  Meal.macros['Lipids'])
-            Meal.modify_ingredient(Meal.find_param('Lipids'),multi)
-        if Meal.macros['Carbs'] > 1.3 * targets['Carbs'] or Meal.macros['Carbs'] < 0.75 * targets['Carbs']:
-            multi =  mt.sqrt(targets['Carbs'] /  Meal.macros['Carbs'])
-            Meal.modify_ingredient(Meal.find_param('Carbs'),multi)
+        if self.macros['Proteins'] > 1.3 * targets['Proteins'] or self.macros['Proteins'] < 0.75 * targets['Proteins']:
+            multi =  mt.sqrt(targets['Proteins'] / self.macros['Proteins'])
+            self.modify_ingredient(self.find_param('Proteins'),multi)
+        if self.macros['Lipids'] > 1.3 * targets['Lipids'] or self.macros['Lipids'] < 0.75 * targets['Lipids']:
+            multi =  mt.sqrt(targets['Lipids'] /  self.macros['Lipids'])
+            self.modify_ingredient(self.find_param('Lipids'),multi)
+        if self.macros['Carbs'] > 1.3 * targets['Carbs'] or self.macros['Carbs'] < 0.75 * targets['Carbs']:
+            multi =  mt.sqrt(targets['Carbs'] /  self.macros['Carbs'])
+            self.modify_ingredient(self.find_param('Carbs'),multi)
         return
 
     def resize (self , number):
@@ -38,21 +38,34 @@ class Meal:
         bestScore = 0
         i=0
         f=-1
+        print
+        for i in range(0,self.ingredients.shape[0]):
 
-        for ingredient in  Meal.ingredients:
-            score = ingredient[param]
+            score = self.ingredients[param].iloc[i]
             if score > bestScore:
                 bestScore = score
                 f=i
-            i=i+1
+
         return f
 
-    def modify_ingredient (self ,inList, multiplier):
+    def present(self):
+        print self.name
+        print self.macros
+        print self.ingredients
 
 
-        Meal.macros['Kcal'] += Meal.ingredients['Kcal'].iloc[inList]*multiplier
-        Meal.macros['Proteins'] += Meal.ingredients['Proteins'].iloc[inList] * multiplier
-        Meal.macros['Carbs'] += Meal.ingredients['Carbs'].iloc[inList] * multiplier
-        Meal.macros['Lipids'] += Meal.ingredients['Lipids'].iloc[inList] * multiplier
+
+    def modify_ingredient (self ,inList, multi):
+
+        multiplier = multi -1
+        self.macros['Kcal'] += self.ingredients['Kcal'].iloc[inList]*multiplier
+        self.ingredients['Kcal'].iloc[inList] += self.ingredients['Kcal'].iloc[inList] * multiplier
+        self.macros['Proteins'] += self.ingredients['Proteins'].iloc[inList] * multiplier
+        self.ingredients['Proteins'].iloc[inList] += self.ingredients['Proteins'].iloc[inList] * multiplier
+        self.macros['Carbs'] += self.ingredients['Carbs'].iloc[inList] * multiplier
+        self.ingredients['Carbs'].iloc[inList] += self.ingredients['Carbs'].iloc[inList] * multiplier
+        self.macros['Lipids'] += self.ingredients['Lipids'].iloc[inList] * multiplier
+        self.ingredients['Lipids'].iloc[inList] += self.ingredients['Lipids'].iloc[inList] * multiplier
+        self.ingredients['Amount'].iloc[inList] = self.ingredients['Amount'].iloc[inList] * multi
         return
 

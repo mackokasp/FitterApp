@@ -1,9 +1,42 @@
 import pandas as pd
 import Patient
 import Calculator
+import Meal
+pd.options.mode.chained_assignment = None
 
 diets = ['CFL', 'CFH', 'HP', 'LC', 'PA']
 macros = []
+
+targets = {'Kcal': 400, 'Proteins': 20, 'Lipids': 10, 'Carbs': 30}
+calc = Calculator.Calculator()
+ids = calc.find_meal('breakfast','all',0)
+print ids
+f= calc.select_meal(ids,targets)
+meal = calc.create_meal(f)
+meal.present()
+meal.adjust(targets)
+meal.present()
+
+
+result = Patient.Patient()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 def load_macros(schema):
@@ -17,9 +50,3 @@ def load_macros(schema):
             macros.append(float(line[6:8]))
             break
     return macra
-
-
-calc = Calculator.Calculator()
-print calc.calc_meal(1)
-
-result = Patient.Patient()
