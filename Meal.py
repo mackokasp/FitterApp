@@ -12,26 +12,29 @@ class Meal:
         self.name = name
 
     def adjust (self,targets):
-        if self.macros['Proteins'] > 1.3 * targets['Proteins'] or self.macros['Proteins'] < 0.75 * targets['Proteins']:
-            multi =  mt.sqrt(targets['Proteins'] / self.macros['Proteins'])
+        if self.macros['Proteins'] > 1.5 * targets['Proteins'] or self.macros['Proteins'] < 0.65 * targets['Proteins']:
+            multi =2* mt.sqrt(targets['Proteins'] / self.macros['Proteins'])
             self.modify_ingredient(self.find_param('Proteins'),multi)
-        if self.macros['Lipids'] > 1.3 * targets['Lipids'] or self.macros['Lipids'] < 0.75 * targets['Lipids']:
-            multi =  mt.sqrt(targets['Lipids'] /  self.macros['Lipids'])
+        if self.macros['Lipids'] > 1.5 * targets['Lipids'] or self.macros['Lipids'] < 0.65 * targets['Lipids']:
+            multi = 1.5* mt.sqrt(targets['Lipids'] /  self.macros['Lipids'])
             self.modify_ingredient(self.find_param('Lipids'),multi)
-        if self.macros['Carbs'] > 1.3 * targets['Carbs'] or self.macros['Carbs'] < 0.75 * targets['Carbs']:
+        if self.macros['Carbs'] > 1.5 * targets['Carbs'] or self.macros['Carbs'] < 0.65 * targets['Carbs']:
             multi =  mt.sqrt(targets['Carbs'] /  self.macros['Carbs'])
             self.modify_ingredient(self.find_param('Carbs'),multi)
+        if self.macros['Kcal'] > 1.2 * targets['Kcal'] or self.macros['Kcal'] < 0.75 * targets['Kcal']:
+            multi =  mt.sqrt(targets['Kcal'] /  self.macros['Kcal'])
+            self.resize(multi)
         return
 
     def resize (self , number):
-        Meal.macros['Kcal'] *= number
-        Meal.macros['Proteins'] *= number
-        Meal.macros['Lipids'] *= number
-        Meal.macros['Carbs'] *= number
-        Meal.ingredients['Kcal'] *= number
-        Meal.ingredients['Lipids'] *= number
-        Meal.ingredients['Proteins'] *= number
-        Meal.ingredients['Carbs'] *= number
+        self.macros['Kcal'] *= number
+        self.macros['Proteins'] *= number
+        self.macros['Lipids'] *= number
+        self.macros['Carbs'] *= number
+        self.ingredients['Kcal'] *= number
+        self.ingredients['Lipids'] *= number
+        self.ingredients['Proteins'] *= number
+        self.ingredients['Carbs'] *= number
         return
 
     def find_param (self,param):
@@ -56,16 +59,16 @@ class Meal:
 
 
     def modify_ingredient (self ,inList, multi):
-
         multiplier = multi -1
-        self.macros['Kcal'] += self.ingredients['Kcal'].iloc[inList]*multiplier
-        self.ingredients['Kcal'].iloc[inList] += self.ingredients['Kcal'].iloc[inList] * multiplier
-        self.macros['Proteins'] += self.ingredients['Proteins'].iloc[inList] * multiplier
-        self.ingredients['Proteins'].iloc[inList] += self.ingredients['Proteins'].iloc[inList] * multiplier
-        self.macros['Carbs'] += self.ingredients['Carbs'].iloc[inList] * multiplier
-        self.ingredients['Carbs'].iloc[inList] += self.ingredients['Carbs'].iloc[inList] * multiplier
-        self.macros['Lipids'] += self.ingredients['Lipids'].iloc[inList] * multiplier
-        self.ingredients['Lipids'].iloc[inList] += self.ingredients['Lipids'].iloc[inList] * multiplier
+
+        self.macros['Kcal']= self.macros['Kcal'] + self.ingredients['Kcal'].iloc[inList]*multiplier
+        self.ingredients['Kcal'].iloc[inList] = self.ingredients['Kcal'].iloc[inList] * multi
+        self.macros['Proteins'] = self.macros['Proteins']+ self.ingredients['Proteins'].iloc[inList] * multiplier
+        self.ingredients['Proteins'].iloc[inList] = self.ingredients['Proteins'].iloc[inList] * multi
+        self.macros['Carbs'] = self.ingredients['Carbs'].iloc[inList] * multiplier + self.macros['Carbs']
+        self.ingredients['Carbs'].iloc[inList] = self.ingredients['Carbs'].iloc[inList] * multi
+        self.macros['Lipids'] = self.macros['Lipids']+self.ingredients['Lipids'].iloc[inList] * multiplier
+        self.ingredients['Lipids'].iloc[inList] =  self.ingredients['Lipids'].iloc[inList] * multi
         self.ingredients['Amount'].iloc[inList] = self.ingredients['Amount'].iloc[inList] * multi
         return
 

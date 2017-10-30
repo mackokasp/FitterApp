@@ -43,18 +43,22 @@ class Calculator:
         return x
 
     def select_meal(self,list,targetMacros):                           ## trzeba to jakos poprawic
-        bestMeal = 1
+        bestMeal = 0
         bestScore =999999
         for meal in list:
             mealMacros =self.calc_meal(meal)
-            score = ((mealMacros['Kcal']-targetMacros['Kcal'])/100)**2
-            score =+ (mealMacros['Proteins'] - targetMacros['Proteins'])**2
-            score =+ (mealMacros['Lipids'] - targetMacros['Lipids'])**2
-            score =+ ((mealMacros['Carbs'] - targetMacros['Carbs'])/2)**2
+            score = (mealMacros['Proteins'] - targetMacros['Proteins'])**2
+            score = score + (mealMacros['Lipids'] - targetMacros['Lipids'])**2
+            score = score + ((mealMacros['Carbs'] - targetMacros['Carbs']))**2
+
             if score < bestScore:
                 bestMeal = meal
                 bestScore =score
-        return bestMeal
+        M=self.create_meal(bestMeal)
+        return M
+
+
+
 
     def get_ingredient (self,id):
         result = {'Kcal': 0, 'Proteins': 0, 'Lipids': 0, 'Carbs': 0}
@@ -108,6 +112,19 @@ class Calculator:
 
 
 
+    def get_diet (self ,name):
+        query = 'Select  proteins , lipids , carbs,kcal  from dietinfo where name =\'' + name + '\''
+
+        result = {'Kcal': 0, 'Proteins': 0, 'Lipids': 0, 'Carbs': 0}
+        curs = self.conn.cursor()
+        curs.execute(query)
+        row = curs.fetchall()
+        for macro in row:
+            result['Proteins'] = macro[0]
+            result['Lipids'] = macro[1]
+            result['Carbs'] = macro[2]
+            result['Kcal'] = macro[3]
+            return result
 
 
 

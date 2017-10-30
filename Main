@@ -4,21 +4,26 @@ import Calculator
 import Meal
 pd.options.mode.chained_assignment = None
 
-diets = ['CFL', 'CFH', 'HP', 'LC', 'PA']
-macros = []
 
-targets = {'Kcal': 400, 'Proteins': 20, 'Lipids': 10, 'Carbs': 30}
+macros = []
 calc = Calculator.Calculator()
-ids = calc.find_meal('breakfast','all',0)
-print ids
-f= calc.select_meal(ids,targets)
-meal = calc.create_meal(f)
+patient = Patient.Patient()
+patient.calc_blood()
+patient.present()
+ids = calc.find_meal('breakfast',patient.diet,0)
+ids2 = calc.find_meal('dinner',patient.diet,0)
+targets = calc.get_diet(patient.diet)
+meal= calc.select_meal(ids,targets)
+meal2 =calc.select_meal(ids2,targets)
 meal.present()
 meal.adjust(targets)
 meal.present()
+meal2.present()
+meal2.adjust(targets)
+meal2.present()
 
 
-result = Patient.Patient()
+
 
 
 
